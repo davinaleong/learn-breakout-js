@@ -1,4 +1,4 @@
-//TODO: Stopped at: Defining a drawing loop
+//TODO: Stopped at: Defining a paddle to hit the ball
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
