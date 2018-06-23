@@ -17,4 +17,7 @@ canvas {
     background: #eee;
     display: block;
     margin: 0 auto;
+    border-left: thin solid #999;
+    border-top: thin solid #999;
+    border-right: thin solid #999;
 }
