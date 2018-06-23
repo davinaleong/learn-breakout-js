@@ -3,16 +3,35 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+const constants = {
+    canvas: {width: canvas.width, height: canvas.height},
+    ballInitial: {
+        position: {x: 240, y: 317},
+        radius: 10,
+        speed: 2
+    },
+    paddleInitial: {
+        position: {x: 202.5, y: 310},
+        dimension: {height: 10, width: 75},
+        speed: 7
+    }
+};
 const colours = {ball: "#CD3837", brick: "#0095DD", paddle: "#0095DD"};
 
-const ball = {x: canvas.width / 2, y: canvas.height - 30, radius: 10,
-    colour: colours.ball, speed: 2};
-ball.dx = ball.speed;
-ball.dy = -ball.speed;
+const ball = {
+    position: {x: constants.ballInitial.position.x, y: constants.ballInitial.position.y},
+    delta: {x: constants.ballInitial.speed, y: -constants.ballInitial.speed},
+    radius: constants.ballInitial.radius,
+    speed: constants.ballInitial.speed,
+    colour: colours.ball
+};
 
-const paddle = {height: 10, width: 75, speed: 7, colour: colours.paddle};
-paddle.x = (canvas.width - paddle.width) / 2;
-paddle.y = canvas.height - paddle.height;
+const paddle = {
+    dimension: {height: constants.paddleInitial.dimension.height, width: constants.paddleInitial.dimension.width},
+    position: {x: constants.paddleInitial.position.x, y: constants.paddleInitial.position.y},
+    speed: constants.paddleInitial.speed,
+    colour: colours.paddle
+};
 
 const buttonPressed = {left: false, right: false};
 //#endregion
@@ -20,7 +39,7 @@ const buttonPressed = {left: false, right: false};
 //#region Functions
 function drawBall() {
     ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+    ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI*2);
     ctx.fillStyle = ball.colour;
     ctx.fill();
     ctx.closePath();
@@ -28,7 +47,7 @@ function drawBall() {
 
 function drawPaddle() {
     ctx.beginPath();
-    ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
+    ctx.rect(paddle.position.x, paddle.position.y, paddle.dimension.width, paddle.dimension.height);
     ctx.fillStyle = paddle.colour;
     ctx.fill();
     ctx.closePath();
@@ -42,33 +61,33 @@ function draw() {
     //#endregion
 
     //#region Ball
-    if(ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
-        ball.dx = -ball.dx;
+    if(ball.position.x + ball.delta.x > canvas.width - ball.radius || ball.position.x + ball.delta.x < ball.radius) {
+        ball.delta.x = -ball.delta.x;
     }
 
-    if(ball.y + ball.dy < ball.radius) {
-        ball.dy = -ball.dy;
+    if(ball.position.y + ball.delta.y < ball.radius) {
+        ball.delta.y = -ball.delta.y;
     }
-    else if(ball.y + ball.dy > canvas.height + ball.radius) {
-        if(ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
-            ball.dy = -ball.dy;
+    else if(ball.position.y + ball.delta.y > canvas.height + ball.radius) {
+        if(ball.position.x > paddle.position.x && ball.position.x < paddle.position.x + paddle.dimension.width) {
+            ball.delta.y = -ball.delta.y;
         }
-        else {
-            alert("GAME OVER");
-            document.location.reload();
-        }
+        // else {
+        //     alert("GAME OVER");
+        //     document.location.reload();
+        // }
     }
 
-    ball.x += ball.dx;
-    ball.y += ball.dy;
+    ball.position.x += ball.delta.x;
+    ball.position.y += ball.delta.y;
     //#endregion
 
 
     //#region Paddle
-    if(buttonPressed.right && paddle.x < canvas.width - paddle.width) {
-        paddle.x += paddle.speed;
-    } else if(buttonPressed.left && paddle.x > 0) {
-        paddle.x -= paddle.speed;
+    if(buttonPressed.right && paddle.position.x < canvas.width - paddle.dimension.width) {
+        paddle.position.x += paddle.speed;
+    } else if(buttonPressed.left && paddle.position.x > 0) {
+        paddle.position.x -= paddle.speed;
     }
     //#endregion
 }
