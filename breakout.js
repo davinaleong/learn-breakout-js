@@ -46,8 +46,17 @@ function draw() {
         ball.dx = -ball.dx;
     }
 
-    if(ball.y + ball.dy > canvas.height - ball.radius || ball.y + ball.dy < ball.radius) {
+    if(ball.y + ball.dy < ball.radius) {
         ball.dy = -ball.dy;
+    }
+    else if(ball.y + ball.dy > canvas.height + ball.radius) {
+        if(ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+            ball.dy = -ball.dy;
+        }
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+        }
     }
 
     ball.x += ball.dx;
