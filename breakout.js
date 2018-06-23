@@ -6,7 +6,7 @@ const ctx = canvas.getContext("2d");
 const constants = {
     canvas: {width: canvas.width, height: canvas.height},
     ballInitial: {
-        position: {x: 240, y: 317},
+        position: {x: 240, y: 290},
         radius: 10,
         speed: 2
     },
