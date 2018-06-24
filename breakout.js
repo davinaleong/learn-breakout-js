@@ -4,6 +4,7 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
 const constants = {
+    gameStates: {playing: "PLAYING", gameOver: "GAME OVER"},
     canvas: {width: canvas.width, height: canvas.height},
     ballInitial: {
         position: {x: 240, y: 290},
@@ -34,6 +35,7 @@ const paddle = {
 };
 
 const buttonPressed = {left: false, right: false};
+let currentGameState = constants.gameStates.playing;
 //#endregion
 
 //#region Functions
@@ -68,14 +70,16 @@ function draw() {
     if(ball.position.y + ball.delta.y < ball.radius) {
         ball.delta.y = -ball.delta.y;
     }
-    else if(ball.position.y + ball.delta.y > canvas.height + ball.radius) {
+    else if(ball.position.y + ball.delta.y > canvas.height + ball.radius + 10) {
         if(ball.position.x > paddle.position.x && ball.position.x < paddle.position.x + paddle.dimension.width) {
             ball.delta.y = -ball.delta.y;
         }
-        // else {
-        //     alert("GAME OVER");
-        //     document.location.reload();
-        // }
+        else {
+            ball.delta = {x: 0, y: 0};
+            currentGameState = constants.gameStates.gameOver;
+            alert("GAME OVER");
+            document.location.reload();
+        }
     }
 
     ball.position.x += ball.delta.x;
@@ -128,5 +132,5 @@ function keyUpHandler(event) {
     }
 }
 //#endregion
-setInterval(draw, 10);
+if(currentGameState == constants.gameStates.playing) setInterval(draw, 10);
 //#endregion
