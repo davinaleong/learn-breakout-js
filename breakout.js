@@ -41,13 +41,34 @@ const brickProps = {
 const score = {
     x: 8,
     y: 20,
-    font: "16px Verdana",
-    colour: "#000000",
     value: 0,
-    multiplier: 10
+    multiplier: 10,
+    max: 150,
+    font: "14px Segoe UI",
+    colour: "#000000"
+};
+const tries = {
+    x: 415,
+    y: 20,
+    value: 3,
+    max: 3,
+    font: "14px Segoe UI",
+    colour: "#000000",
+};
+const initialValues = {
+    ballProps: {
+        x: ballProps.x,
+        y: ballProps.y,
+        dx: ballProps.dx,
+        dy: ballProps.dy
+    },
+    paddleProps: {
+        x: paddleProps.x,
+        y: paddleProps.y
+    },
+    score: score.value,
+    tries: tries.value
 }
-score.max = brickProps.rows * brickProps.columns * score.multiplier;
-console.log(score);
 
 let brickArr = [];
 for (let c = 0; c < brickProps.columns; ++c) {
@@ -177,12 +198,19 @@ function drawScore() {
     ctx.fillText(`Score: ${score.value}`, score.x, score.y);
 }
 
+function drawTries() {
+    ctx.font = tries.font;
+    ctx.fillStyle = tries.colour;
+    ctx.fillText(`Tries: ${tries.value}`, tries.x, tries.y);
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
     drawBall();
     drawPaddle();
     drawScore();
+    drawTries();
     collisionDetection();
 
     if (ballProps.x + ballProps.dx > canvas.width - ballProps.radius ||
@@ -197,7 +225,17 @@ function draw() {
             ballProps.dy = -ballProps.dy;
         }
         else {
-            updateGameState(gameStates.LOSE, "GAME OVER!");
+            --tries.value;
+            if(tries.value <= 0) {
+                tries == 0;
+                updateGameState(gameStates.LOSE, "GAME OVER!");
+            } else {
+                ballProps.x = initialValues.ballProps.x;
+                ballProps.y = initialValues.ballProps.y;
+                ballProps.dx = initialValues.ballProps.dx;
+                ballProps.dy = initialValues.ballProps.dy;
+                paddleProps.x = initialValues.paddleProps.x;
+            }
         }
     }
 
