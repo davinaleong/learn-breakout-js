@@ -3,7 +3,6 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-const colours = { ball: "#CD3837", brick: "#95DD00", paddle: "#0095DD" };
 const gameStates = { ERROR: "ERROR", PLAYING: "PLAYING", LOSE: "LOSE", WIN: "WIN" };
 let currentGameState = gameStates.PLAYING;
 
@@ -39,6 +38,16 @@ const brickProps = {
     offsetLeft: 30,
     colour: "#517789"
 };
+const score = {
+    x: 8,
+    y: 20,
+    font: "16px Verdana",
+    colour: "#000000",
+    value: 0,
+    multiplier: 10
+}
+score.max = brickProps.rows * brickProps.columns * score.multiplier;
+console.log(score);
 
 let brickArr = [];
 for (let c = 0; c < brickProps.columns; ++c) {
@@ -49,7 +58,7 @@ for (let c = 0; c < brickProps.columns; ++c) {
 }
 //#endregion
 
-//#region Event Handling
+//#region Events
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -84,8 +93,19 @@ function keyUpHandler(event) {
             break;
     }
 }
+
+function updateGameState(gameState, alertMessage) {
+    currentGameState = gameState;
+    if(gameState != gameStates.PLAYING) {
+        ballProps.dx = 0;
+        ballProps.dy = 0;
+        alert(alertMessage);
+        document.location.reload();
+    }
+}
 //#endregion
 
+//#region Physics
 function collisionDetection() {
     for (let c = 0; c < brickProps.columns; ++c) {
         for (let r = 0; r < brickProps.rows; ++r) {
@@ -97,12 +117,19 @@ function collisionDetection() {
                     
                     ballProps.dy = -ballProps.dy;
                     thisBrick.state = brickStates.HIT;
+                    score.value += score.multiplier;
+
+                    if(score.value == score.max) {
+                        updateGameState(gameStates.WIN, "CONGRATULATIONS, YOU WIN!")
+                    }
                 }
             }
         }
     }
 }
+//#endregion
 
+//#region Graphics
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ballProps.x, ballProps.y, ballProps.radius, 0, Math.PI * 2);
@@ -136,11 +163,18 @@ function drawBricks() {
     }
 }
 
+function drawScore() {
+    ctx.font = score.font;
+    ctx.fillStyle = score.colour;
+    ctx.fillText(`Score: ${score.value}`, score.x, score.y);
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
     collisionDetection();
 
     if (ballProps.x + ballProps.dx > canvas.width - ballProps.radius ||
@@ -155,11 +189,7 @@ function draw() {
             ballProps.dy = -ballProps.dy;
         }
         else {
-            ballProps.dx = 0;
-            ballProps.dy = 0;
-            currentGameState = gameStates.LOSE;
-            alert("GAME OVER");
-            document.location.reload();
+            updateGameState(gameStates.LOSE, "GAME OVER!");
         }
     }
 
@@ -173,5 +203,6 @@ function draw() {
     ballProps.x += ballProps.dx;
     ballProps.y += ballProps.dy;
 }
+//#endregion
 
 if(currentGameState == gameStates.PLAYING) setInterval(draw, 10);
