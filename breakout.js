@@ -248,7 +248,9 @@ function draw() {
 
     ballProps.x += ballProps.dx;
     ballProps.y += ballProps.dy;
+
+    requestAnimationFrame(draw);
 }
 //#endregion
 
-if(currentGameState == gameStates.PLAYING) setInterval(draw, 10);
+if(currentGameState == gameStates.PLAYING) draw(); //setInterval(draw, 10);
