@@ -61,6 +61,7 @@ for (let c = 0; c < brickProps.columns; ++c) {
 //#region Events
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
 
 function keyDownHandler(event) {
     switch (event.keyCode) {
@@ -91,6 +92,13 @@ function keyUpHandler(event) {
         default:
             console.warn(`keyCode ${event.keyCode} not in use.`);
             break;
+    }
+}
+
+function mouseMoveHandler(event) {
+    let relativeX = event.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleProps.x = relativeX - paddleProps.width / 2;
     }
 }
 

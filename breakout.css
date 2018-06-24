@@ -21,3 +21,7 @@ canvas {
     border-top: thin solid #999;
     border-right: thin solid #999;
 }
+
+canvas:hover {
+    cursor: none;
+}
