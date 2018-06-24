@@ -3,6 +3,7 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+const colours = {ball: "#CD3837", brick: "#95DD00", paddle: "#0095DD"};
 const constants = {
     gameStates: {playing: "PLAYING", gameOver: "GAME OVER"},
     canvas: {width: canvas.width, height: canvas.height},
@@ -15,9 +16,13 @@ const constants = {
         position: {x: 202.5, y: 310},
         dimension: {height: 10, width: 75},
         speed: 7
+    },
+    bricksInitial: {
+        dimension: {rows: 3, columns: 5, width: 75, height: 20},
+        offset: {padding: 10, top: 30, left: 30},
+        colour: colours.brick
     }
 };
-const colours = {ball: "#CD3837", brick: "#0095DD", paddle: "#0095DD"};
 
 const ball = {
     position: {x: constants.ballInitial.position.x, y: constants.ballInitial.position.y},
@@ -35,7 +40,46 @@ const paddle = {
 };
 
 const buttonPressed = {left: false, right: false};
+
+let bricks = [];
 let currentGameState = constants.gameStates.playing;
+//#endregion
+
+//#region Event Listeners
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(event) {
+    switch(event.keyCode) {
+        case 39:
+        buttonPressed.right = true;
+        break;
+
+        case 37:
+        buttonPressed.left = true;
+        break;
+
+        default:
+        console.warn(`keyCode ${event.keyCode} not in use.`);
+        break;
+    }
+}
+
+function keyUpHandler(event) {
+    switch(event.keyCode) {
+        case 39:
+        buttonPressed.right = false;
+        break;
+
+        case 37:
+        buttonPressed.left = false;
+        break;
+
+        default:
+        console.warn(`keyCode ${event.keyCode} not in use.`);
+        break;
+    }
+}
 //#endregion
 
 //#region Functions
@@ -55,9 +99,34 @@ function drawPaddle() {
     ctx.closePath();
 }
 
+function drawBricks() {
+    const brickProps = constants.bricksInitial;
+    for(let i = 0; i < brickProps.dimension.columns; ++i) {
+        bricks[i] = [];
+        for(let j = 0; j < brickProps.dimension.rows; ++j) {
+            const brick = {
+                index: {row: i, column: j},
+                position: {
+                    x: (i * (brickProps.dimension.width + brickProps.offset.padding)) + brickProps.offset.left,
+                    y: (j * (brickProps.dimension.height + brickProps.offset.padding)) + brickProps.offset.top
+                }
+            };
+            
+            ctx.beginPath();
+            ctx.rect(brick.position.x, brick.position.y, brickProps.dimension.width, brickProps.dimension.height);
+            ctx.fillStyle = brickProps.colour;
+            ctx.fill();
+            ctx.closePath();
+
+            bricks[i][j] = brick;
+        }
+    }
+}
+
 function draw() {
     //#region Draw Graphics
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
     drawBall();
     drawPaddle();
     //#endregion
@@ -96,41 +165,5 @@ function draw() {
     //#endregion
 }
 
-//#region Event Listeners
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-function keyDownHandler(event) {
-    switch(event.keyCode) {
-        case 39:
-        buttonPressed.right = true;
-        break;
-
-        case 37:
-        buttonPressed.left = true;
-        break;
-
-        default:
-        console.warn(`keyCode ${event.keyCode} not in use.`);
-        break;
-    }
-}
-
-function keyUpHandler(event) {
-    switch(event.keyCode) {
-        case 39:
-        buttonPressed.right = false;
-        break;
-
-        case 37:
-        buttonPressed.left = false;
-        break;
-
-        default:
-        console.warn(`keyCode ${event.keyCode} not in use.`);
-        break;
-    }
-}
-//#endregion
 if(currentGameState == constants.gameStates.playing) setInterval(draw, 10);
 //#endregion
